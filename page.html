@@ -1,0 +1,294 @@
+<title>Khoj</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap">
+<style>
+:root{
+  --bg:#F6F7F9; --card:#FFF; --ink:#15181D; --ink2:#454E5B; --mut:#68717F; --line:#DCE1E8;
+  --blue:#1B5E9C; --blue-bg:#E8F0F8;
+  --green:#12684A; --green-bg:#E1F0E9;
+  --amber:#8A5A12; --amber-bg:#FBF0DC;
+  --sans:"Noto Sans","Noto Sans Devanagari",system-ui,-apple-system,sans-serif;
+  --dev:"Noto Sans Devanagari","Noto Sans",system-ui,sans-serif;
+  --sh:0 1px 2px rgba(0,0,0,.05),0 3px 10px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111419; --card:#191D24; --ink:#E9EDF3; --ink2:#C3CBD6; --mut:#98A2B1; --line:#2A313B;
+  --blue:#74AEE2; --blue-bg:#1A2836; --green:#63C79B; --green-bg:#14271F;
+  --amber:#E0A45C; --amber-bg:#2C2117; --sh:0 1px 2px rgba(0,0,0,.4),0 3px 10px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --bg:#111419; --card:#191D24; --ink:#E9EDF3; --ink2:#C3CBD6; --mut:#98A2B1; --line:#2A313B;
+  --blue:#74AEE2; --blue-bg:#1A2836; --green:#63C79B; --green-bg:#14271F;
+  --amber:#E0A45C; --amber-bg:#2C2117; --sh:0 1px 2px rgba(0,0,0,.4),0 3px 10px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;
+  line-height:1.5;-webkit-text-size-adjust:100%}
+.w{max-width:640px;margin:0 auto;padding:18px 15px 60px}
+h1{font-size:1.45rem;font-weight:700;margin:0 0 3px}
+h1 .n{font-family:var(--dev);font-weight:600;color:var(--mut);font-size:1rem;margin-left:.4rem}
+.lede{color:var(--ink2);margin:0 0 16px;font-size:1rem}
+.call{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.call a{flex:1 1 auto;min-width:120px;text-align:center;text-decoration:none;background:var(--card);
+  border:1px solid var(--line);border-radius:10px;padding:9px 10px;box-shadow:var(--sh);color:var(--ink)}
+.call .t{display:block;font-size:.72rem;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+.call .v{display:block;font-size:1.1rem;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--sh)}
+label{display:block;font-size:1.02rem;font-weight:600;margin-bottom:8px}
+#q{width:100%;font-family:var(--sans);font-size:1.3rem;padding:15px;border-radius:11px;
+  border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+#q:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.tip{font-size:.92rem;color:var(--mut);margin-top:9px}
+.row{display:flex;gap:9px;align-items:stretch}
+.row #q{flex:1;min-width:0}
+#mic{flex:0 0 auto;width:60px;border-radius:11px;border:2px solid var(--line);
+  background:var(--bg);color:var(--blue);cursor:pointer;display:none;
+  align-items:center;justify-content:center;padding:0}
+#mic.on{display:flex}
+#mic:active{transform:scale(.97)}
+#mic svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+#mic[data-state="listening"]{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);
+  animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){#mic[data-state="listening"]{animation:none}}
+.lang{display:flex;gap:6px;margin-top:9px;align-items:center;flex-wrap:wrap}
+.lang button{font:inherit;font-size:.88rem;padding:5px 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink2)}
+.lang button[aria-pressed="true"]{background:var(--blue-bg);border-color:var(--blue);
+  color:var(--blue);font-weight:700}
+.lang .lbl{font-size:.88rem;color:var(--mut)}
+.heard{margin-top:10px;background:var(--blue-bg);border-radius:9px;padding:10px 12px;
+  font-size:.95rem;color:var(--ink2);display:none}
+.heard.show{display:block}
+.heard b{font-family:var(--dev);color:var(--ink);font-size:1.05rem}
+.cnt{margin:20px 0 10px;font-size:.95rem;color:var(--mut)}
+ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+.r{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;box-shadow:var(--sh)}
+.r.hit{border-color:var(--green);border-width:2px}
+.nm{font-family:var(--dev);font-size:1.28rem;font-weight:700;line-height:1.3;word-break:break-word}
+.ro{font-size:.9rem;color:var(--mut);margin-top:1px}
+.tag{display:inline-block;font-size:.76rem;font-weight:700;padding:4px 10px;border-radius:999px;margin-top:8px}
+.tag.f{background:var(--green-bg);color:var(--green)}
+.tag.m{background:var(--blue-bg);color:var(--blue)}
+.det{margin-top:9px;font-size:.94rem;color:var(--ink2);display:flex;flex-wrap:wrap;gap:4px 14px}
+.det .dv{font-family:var(--dev)}
+.alert{margin-top:11px;background:var(--green-bg);border-radius:9px;padding:11px}
+.alert .h{font-weight:700;color:var(--green);font-size:.95rem;margin-bottom:5px}
+.alert .b{font-size:.94rem;color:var(--ink2)}
+.alert .nm2{font-family:var(--dev);font-weight:700;color:var(--ink);font-size:1.05rem}
+.none{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--sh)}
+.none h2{font-size:1.1rem;margin:0 0 8px}
+.none p{margin:0 0 10px;color:var(--ink2);font-size:.98rem}
+.none ol{margin:0;padding-left:1.2rem;color:var(--ink2);font-size:.98rem;display:flex;flex-direction:column;gap:6px}
+a{color:var(--blue)}
+.foot{margin-top:26px;padding-top:15px;border-top:1px solid var(--line);font-size:.88rem;color:var(--mut)}
+.foot p{margin:0 0 8px}
+</style>
+
+<div class="w">
+<h1>Khoj <span class="n">खोज</span></h1>
+<p class="lede">Search for someone missing after the Nepal flood. Type their name in English or Nepali &mdash; spelling does not have to be right.</p>
+
+<div class="call">
+  <a href="tel:100"><span class="t">Police</span><span class="v">100</span></a>
+  <a href="tel:16600141516"><span class="t">Free line</span><span class="v">1660-014-1516</span></a>
+  <a href="tel:102"><span class="t">Ambulance</span><span class="v">102</span></a>
+</div>
+
+<div class="box">
+  <label for="q">Who are you looking for?</label>
+  <div class="row">
+    <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Type a name">
+    <button id="mic" type="button" aria-label="Search by speaking a name">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg>
+    </button>
+  </div>
+  <div class="lang" id="lang" hidden>
+    <span class="lbl">Speak in</span>
+    <button type="button" data-lang="ne-NP" aria-pressed="true" lang="ne">&#2344;&#2375;&#2346;&#2366;&#2354;&#2368;</button>
+    <button type="button" data-lang="hi-IN" aria-pressed="false" lang="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368;</button>
+    <button type="button" data-lang="bn-IN" aria-pressed="false" lang="bn">&#2476;&#2494;&#2434;&#2482;&#2494;</button>
+    <button type="button" data-lang="ta-IN" aria-pressed="false" lang="ta">&#2980;&#2990;&#3007;&#2996;&#3021;</button>
+    <button type="button" data-lang="ml-IN" aria-pressed="false" lang="ml">&#3374;&#3378;&#3375;&#3390;&#3379;&#3330;</button>
+    <button type="button" data-lang="en-US" aria-pressed="false">English</button>
+  </div>
+  <div class="heard" id="heard" role="status" aria-live="polite"></div>
+  <div class="tip">Just the first name is fine.</div>
+</div>
+
+<div class="cnt" id="cnt"></div>
+<ul id="res"></ul>
+<div id="none"></div>
+
+<div class="foot">
+  <p>This searches copies of two government lists &mdash; the flood rescue portal and the police missing list &mdash; taken <span id="when"></span>. It is not run by the government, and being on or off a list here does not prove anything. Always check with the police.</p>
+  <p>Official pages: <a href="https://rescue.opmcm.gov.np/" target="_blank" rel="noopener">rescue portal</a> &middot; <a href="https://udb.nepalpolice.gov.np/missing" target="_blank" rel="noopener">police missing list</a> &middot; <a href="https://familylinks.icrc.org/" target="_blank" rel="noopener">Red Cross family tracing</a></p>
+</div>
+</div>
+
+<script>
+const DATA=__RECORDS__;
+// Indic scripts are encoded parallel to Devanagari, so subtracting a block
+// offset turns them into Devanagari and the existing rules then apply.
+const OFFS=[0x080,0x100,0x180,0x200,0x280,0x300,0x380,0x400];
+function toDeva(t){
+  for(const o of OFFS){const lo=0x0900+o,hi=0x097F+o;
+    for(const c of t){const n=c.codePointAt(0);
+      if(n>=lo&&n<=hi){let r='';for(const d of t){const m=d.codePointAt(0);
+        r+=(m>=lo&&m<=hi)?String.fromCodePoint(m-o):d} return r}}}
+  return t;
+}
+// Tamil writes voiced and unvoiced alike, so தாஸ் is both "Tas" and "Das": try both.
+const TAV={'\u0929':'\u0928','\u091A':'\u0938','\u0924':'\u0926','\u0915':'\u0917','\u092A':'\u092C','\u091F':'\u0921'};
+function variants(t){
+  const d=toDeva(t), out=[d];
+  let tamil=false; for(const c of t){const n=c.codePointAt(0); if(n>=0x0B80&&n<=0x0BFF){tamil=true;break}}
+  if(tamil){let v=''; for(const c of d) v+=(TAV[c]||c); if(v!==d) out.push(v)}
+  return out;
+}
+const CONS={'क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'ng','च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'ny','ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n','प':'p','फ':'ph','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'w','श':'sh','ष':'sh','स':'s','ह':'h','ळ':'l','क़':'k','ख़':'kh','ग़':'g','ज़':'z','ड़':'r','ढ़':'rh','फ़':'f'};
+const IV={'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ए':'e','ऐ':'ai','ओ':'o','औ':'au','ऋ':'ri','ॠ':'ri','ऑ':'o','ऍ':'e'};
+const MA={'ा':'aa','ि':'i','ी':'ee','ु':'u','ू':'oo','े':'e','ै':'ai','ो':'o','ौ':'au','ृ':'ri','ॉ':'o','ॅ':'e'};
+const SG={'ं':'n','ँ':'n','ः':'h','ऽ':''},DG={'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'},VIR='्';
+function d2l(t){let o='',i=0;while(i<t.length){const c=t[i];
+ if(CONS[c]){o+=CONS[c];const n=t[i+1]||'';if(n===VIR){i+=2;continue}if(MA[n]){o+=MA[n];i+=2;continue}o+='a';i++;continue}
+ if(IV[c]){o+=IV[c];i++;continue}if(MA[c]){o+=MA[c];i++;continue}
+ if(SG[c]!==undefined){o+=SG[c];i++;continue}if(DG[c]){o+=DG[c];i++;continue}o+=c;i++}
+ return o.replace(/([a-z])a\b/g,'$1').replace(/\s+/g,' ').trim()}
+const CO=[['ksh','x'],['chh','c'],['sch','s'],['shr','sr'],['kh','k'],['gh','g'],['ch','c'],['jh','j'],['th','t'],['dh','d'],['ph','f'],['bh','b'],['sh','s'],['ss','s'],['cs','x'],['ks','x'],['ng','n'],['ny','n'],['gy','g'],['ee','i'],['oo','u'],['ai','e'],['au','o'],['aa','a'],['ya','a'],['w','b'],['v','b'],['z','j'],['q','k'],['f','p'],['c','k'],['x','ks']];
+const VO=new Set(['a','e','i','o','u']),DEV=/[ऀ-ॿ]/;
+// a real name is a few short words; cap both so a pasted paragraph cannot
+// turn the O(tokens x records) match into a frozen phone
+const MAXTOK=8,MAXLEN=24;
+function pk(t){t=toDeva(String(t).slice(0,200));if(DEV.test(t))t=d2l(t);
+ let s=t.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g,'').replace(/[^a-z\s]/g,''),o=[];
+ for(const w0 of s.split(/\s+/).slice(0,MAXTOK)){if(!w0)continue;let w=w0.slice(0,MAXLEN);for(const[a,b]of CO)w=w.split(a).join(b);
+  w=w.replace(/(.)\1+/g,'$1');const l=w[0]||'';let k=[...w].filter(c=>!VO.has(c)).join('');
+  if(VO.has(l))k=l+k;o.push(k||l)}return o}
+function lev(a,b){if(a===b)return 0;if(!a||!b)return(a||b).length;
+ let p=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){const c=[i];
+ for(let j=1;j<=b.length;j++)c.push(Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]!==b[j-1]?1:0)));p=c}return p[b.length]}
+function sc(q,c){if(!q.length||!c.length)return 0;const u=new Set();let t=0;
+ for(const qt of q){let b=0,bi=-1;for(let i=0;i<c.length;i++){if(u.has(i))continue;
+  const s=1-lev(qt,c[i])/Math.max(qt.length,c[i].length,1);if(s>b){b=s;bi=i}}
+  if(bi>=0&&b>0.34){u.add(bi);t+=b}}return t/q.length}
+
+const R=DATA.records;
+for(const r of R){r._k=pk(r.n);if(DEV.test(r.n))r._l=d2l(r.n)}
+// a missing person who may already be on the found list
+const FOUNDFOR={};
+for(const[li,fi,s,ag]of DATA.leads){if(!FOUNDFOR[li]||ag>FOUNDFOR[li][1])FOUNDFOR[li]=[fi,ag]}
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+document.getElementById('when').textContent=new Date(DATA.fetched).toLocaleDateString(undefined,{day:'numeric',month:'long'});
+
+const $q=document.getElementById('q'),$r=document.getElementById('res'),
+      $c=document.getElementById('cnt'),$n=document.getElementById('none');
+
+function card(i,r){
+  const found=r.t==='f';
+  const tag=found?'<span class="tag f">Found &mdash; safe or rescued</span>'
+                 :'<span class="tag m">Reported missing</span>';
+  const ro=r._l?`<div class="ro">${esc(r._l)}</div>`:'';
+  const det=[r.a?'Age '+esc(r.a):'',r.g?(r.g==='M'?'Male':'Female'):'',
+             r.l?'<span class="dv">'+esc(r.l)+'</span>':''].filter(Boolean)
+             .map(x=>'<span>'+x+'</span>').join('');
+  let alert='';
+  const lead=FOUNDFOR[i];
+  if(!found&&lead){const F=R[lead[0]];
+    alert=`<div class="alert"><div class="h">Someone with this name is on the found list</div>
+      <div class="b">A person recorded as <span class="nm2">${esc(F.n)}</span>${F.a?', age '+esc(F.a):''}
+      was found or rescued. It may or may not be the same person &mdash; names repeat.
+      Please call the police on <a href="tel:100">100</a> and ask them to check.</div></div>`}
+  return `<li class="r${alert?' hit':''}"><div class="nm">${esc(r.n)}</div>${ro}${tag}
+    <div class="det">${det}</div>${alert}</li>`;
+}
+
+function go(){
+  const q=$q.value.trim();
+  if(q.length<2){$r.innerHTML='';$n.innerHTML='';$c.textContent='';return}
+  const qks=variants(q).map(pk);
+  let hits=[];
+  for(let i=0;i<R.length;i++){
+    let best=0; for(const qk of qks){const s=sc(qk,R[i]._k); if(s>best)best=s}
+    if(best>=0.6)hits.push([best,i]);
+  }
+  // People in distress paste a whole message rather than typing a name. Scoring
+  // divides by the words typed, so a real name inside a sentence scores far too
+  // low. If a long query found nothing, score against the record's words instead
+  // so the name still surfaces.
+  if(!hits.length && qks[0].length>3){
+    for(let i=0;i<R.length;i++){
+      let best=0; for(const qk of qks){const s=sc(R[i]._k,qk); if(s>best)best=s}
+      if(best>=0.85)hits.push([best,i]);
+    }
+  }
+  hits.sort((a,b)=>{const A=FOUNDFOR[a[1]]?1:0,B=FOUNDFOR[b[1]]?1:0;
+    return (R[b[1]].t==='f')-(R[a[1]].t==='f')||B-A||b[0]-a[0]});
+  const top=hits.slice(0,40);
+  $c.textContent=hits.length?`${hits.length} name${hits.length===1?'':'s'} look close${hits.length>40?' — closest 40 shown':''}`:'';
+  $r.innerHTML=top.map(([s,i])=>card(i,R[i])).join('');
+  $n.innerHTML=hits.length?'':`<div class="none">
+    <h2>No one by that name on these lists</h2>
+    <p>This does not mean anything is wrong, and it does not mean they are safe. Many people are not on any list yet, and names are written down in many different ways.</p>
+    <ol>
+      <li>Try only the first name, or a different spelling.</li>
+      <li>Call the police on <a href="tel:100">100</a> or <a href="tel:16600141516">1660-014-1516</a>.</li>
+      <li>Ask the Red Cross to trace them at <a href="https://familylinks.icrc.org/" target="_blank" rel="noopener">familylinks.icrc.org</a>.</li>
+      <li>If they are not Nepali, call their embassy in Kathmandu.</li>
+    </ol></div>`;
+}
+let t;$q.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(go,120)});
+$q.focus();
+
+/* ---- speak a name instead of typing ----
+   Recognition in Nepali returns Devanagari, which the matcher already handles,
+   so a spoken Nepali name lands exactly where a typed one would. The button is
+   only shown when the browser can actually do this. */
+(function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const mic=document.getElementById('mic'),heard=document.getElementById('heard'),
+        lang=document.getElementById('lang');
+  if(!SR||!window.isSecureContext) return;      // no broken button for anyone
+  mic.classList.add('on'); lang.hidden=false;
+
+  let code='ne-NP', rec=null, listening=false;
+  const btns=[...lang.querySelectorAll('button[data-lang]')];
+  for(const b of btns) b.onclick=()=>{code=b.dataset.lang;
+    for(const o of btns) o.setAttribute('aria-pressed',String(o===b))};
+
+  function say(html,show){heard.innerHTML=html;heard.classList.toggle('show',!!show)}
+  function stop(){listening=false;mic.removeAttribute('data-state');
+    mic.setAttribute('aria-label','Search by speaking a name')}
+
+  mic.addEventListener('click',()=>{
+    if(listening){try{rec.stop()}catch(e){} return}
+    try{rec=new SR()}catch(e){say('Speaking is not available on this browser. Please type the name instead.',1);return}
+    rec.lang=code; rec.interimResults=false; rec.maxAlternatives=3; rec.continuous=false;
+    listening=true; mic.setAttribute('data-state','listening');
+    mic.setAttribute('aria-label','Listening, tap to stop');
+    say('Listening&hellip; say the name now.',1);
+
+    rec.onresult=e=>{
+      const txt=(e.results&&e.results[0]&&e.results[0][0]&&e.results[0][0].transcript||'').trim();
+      stop();
+      if(!txt){say('Nothing was heard. Please try again, or type the name.',1);return}
+      $q.value=txt; go();
+      say('Heard: <b>'+txt.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+
+          '</b><br>If that is wrong, tap the microphone again or type it.',1);
+    };
+    rec.onerror=e=>{stop();
+      const m={'not-allowed':'The microphone is blocked. Allow microphone access in your browser settings, or type the name instead.',
+               'service-not-allowed':'The microphone is blocked. Allow microphone access in your browser settings, or type the name instead.',
+               'no-speech':'Nothing was heard. Please try again, or type the name.',
+               'audio-capture':'No microphone was found. Please type the name instead.',
+               'network':'Speaking needs an internet connection and it could not reach the service. Please type the name instead.',
+               'language-not-supported':'This browser cannot listen in that language. Try another one, or type the name.'};
+      say(m[e.error]||'Speaking did not work. Please type the name instead.',1);
+    };
+    rec.onend=()=>{if(listening){stop();say('Nothing was heard. Please try again, or type the name.',1)}};
+    try{rec.start()}catch(e){stop();say('Speaking did not start. Please type the name instead.',1)}
+  });
+})();
+</script>
