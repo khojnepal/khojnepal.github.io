@@ -1,0 +1,78 @@
+name: Refresh flood lists
+
+# Rebuilds the search from both government lists and publishes it.
+# Runs on GitHub's machines so the live page stays current on its own.
+on:
+  schedule:
+    # The rescue portal holds the flood data and gains thousands of records a
+    # day but pulls in ~5 minutes. The police register takes ~45 and is the part
+    # that times out, so it does not belong on the same clock.
+    - cron: '0 */2 * * *'      # every 2 hours: rescue portal only
+    - cron: '0 11 * * *'       # 06:00 America/Chicago: both lists
+  workflow_dispatch:            # and on demand from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # The runner starts from a clean checkout and records.json is deliberately
+      # not committed, so without this there is no previous copy of the police
+      # register to fall back on when that server is unreachable, and a bad day
+      # silently drops thousands of people off the page.
+      - name: Restore the last good police register
+        uses: actions/cache@v4
+        with:
+          path: records.json
+          key: police-register-${{ github.run_id }}
+          restore-keys: police-register-
+
+      - name: Fetch and rebuild
+        run: |
+          if [ "${{ github.event.schedule }}" = "0 */2 * * *" ]; then
+            ./refresh.sh              # quick: rescue portal only
+          else
+            ./refresh.sh --full       # daily run and manual runs: both lists
+          fi
+
+      - name: Refuse to publish if the data looks wrong
+        run: |
+          size=$(stat -c%s index.html)
+          records=$(python3 -c "import json;print(json.load(open('combined.json'))['records'].__len__())")
+          police=$(python3 -c "import json;print(sum(1 for r in json.load(open('combined.json'))['records'] if r.get('s')=='p'))")
+          echo "index.html: $size bytes, $records records ($police from the police register)"
+          if [ "$police" -eq 0 ]; then
+            echo "::warning::The police register contributed nothing this run; publishing the rescue portal data alone."
+          fi
+          if [ "$size" -lt 5000000 ] || [ "$records" -lt 20000 ]; then
+            echo "::error::Data looks truncated ($size bytes, $records records) — keeping the previous page live."
+            exit 1
+          fi
+
+      - name: Publish
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "no change since yesterday"
+            exit 0
+          fi
+          git config user.name  "Khoj"
+          git config user.email "noreply@example.com"
+          git add index.html
+          # amend rather than stack commits: each build embeds ~33,000 people's
+          # records, and yesterday's copy should not live in history forever
+          git commit --amend --no-edit
+          git push --force
+          echo "published $(date -u +%Y-%m-%dT%H:%MZ)"
