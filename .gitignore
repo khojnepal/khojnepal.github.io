@@ -1,0 +1,16 @@
+# Personal data — names, ages and locations of missing people.
+# Fetched fresh at runtime; never committed.
+records.json
+rescue.json
+combined.json
+
+# Generated artifact and working files
+# index.html is committed so GitHub Pages can serve it
+chain.pem
+fetch.log
+__pycache__/
+
+# Outreach drafts — contain real record names, and are private correspondence
+outreach/
+# stale duplicate of the built page
+khoj.html
